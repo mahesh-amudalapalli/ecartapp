@@ -14,6 +14,14 @@ class ProductService
     {
         return this.client.post('/product/create',product);
     }
+    Update(productId,product)
+    {
+        return this.client.put(`/product/update/${productId}`,product);
+    }
+    Delete(productId)
+    {
+        return this.client.delete(`/product/${productId}`);
+    }
 }
 
 const Pdservice =new ProductService();

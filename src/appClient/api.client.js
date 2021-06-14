@@ -15,8 +15,6 @@ class AppClient {
     }
 
     get(url, config = {}) {
-        let resu="jj";
-        console.log('data: '+resu);
         return this.client.get(url, config);
     }
 
@@ -29,7 +27,7 @@ class AppClient {
     }
 
     delete(url, config = {}) {
-        return this.client.get(url, config);
+        return this.client.delete(url, config);
     }
 }
 

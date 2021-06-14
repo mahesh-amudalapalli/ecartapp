@@ -11,10 +11,34 @@ export default class Products extends Component {
         super(props);
         this.state = {
             Products: [],
-            action:'Create'
+            action:'Create',
+            prevReadOnly:props.readOnly,
+            currentProduct:{}
         }
        
     }
+
+   static getDerivedStateFromProps(props,state)
+    {
+        if(props.readOnly!=state.prevReadOnly)
+        {
+            return{
+                    prevReadOnly:props.readOnly,
+                    action:'Create'
+                }
+        }
+       return null;
+    }
+
+    editProduct=(event)=>{
+this.state.currentProduct=this.state.Products.find(p=>p.productId==event.target.id);
+this.setState({action:'Edit'})
+    }
+
+    deleteProduct=(event)=>{
+        this.state.currentProduct=this.state.Products.find(p=>p.productId==event.target.id);
+        this.setState({action:'Delete'})
+            }
 
     componentDidMount() {
        this.updateProducts();
@@ -26,6 +50,7 @@ export default class Products extends Component {
         Pdservice.GetAll()
         .then((result) => { this.setState({ Products: result.data }) })
         .catch((error) => { console.log(error) });
+        this.setState({action:'Create',currentProduct:{}})
     }
 
     render() {
@@ -45,20 +70,20 @@ export default class Products extends Component {
                     <tbody>
                         {
                             this.state.Products.map((product) => {
-                                return( <tr>
+                                return( <tr key={product.productId}>
                                     <td>{product.itemCode}</td>
                                     <td>{product.displayName}</td>
                                     <td>{product.price}</td>
                                     <td>{product.mou}</td>
-                                    {!this.props.readOnly &&<td><Nav.Link style={{padding:0}} as={Link} onClick={()=>{this.setState({action:'Edit'})}}>Edit</Nav.Link></td>}
-                                    {!this.props.readOnly &&<td><Nav.Link style={{padding:0}} as={Link} to='/home'>Delete</Nav.Link></td>}
+                                    {!this.props.readOnly &&<td><Nav.Link id={product.productId} style={{padding:0}} as={Link} onClick={this.editProduct}>Edit</Nav.Link></td>}
+                                    {!this.props.readOnly &&<td><Nav.Link id={product.productId} style={{padding:0}} as={Link} onClick={this.deleteProduct}>Delete</Nav.Link></td>}
                                 </tr>)
                             })
                         }
                     </tbody>
                 </table>
             </div>
-            {!this.props.readOnly && <Create updateProductsHandler={this.updateProducts} action={this.state.action} />}
+            {!this.props.readOnly && <Create updateProductsHandler={this.updateProducts} action={this.state.action} editRecord={this.state.currentProduct} />}
             </>
         )
     }
